@@ -49,9 +49,9 @@ HWND hWnd;
 int wallsize = 10;
 vector<vector<Mat>> mat;
 int maxx, maxy, curx, cury;
-Color ColorWall(0, 0, 0);
-Color ColorCur(50, 200, 50);
-Color ColorDeadEnd(200, 0, 0);
+Color ColorWall = Color::Black;
+Color ColorCur = Color::Green;
+Color ColorDeadEnd  = Color::Red;
 bool finished = false;
 RECT rect;
 const int dirs[][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
@@ -156,7 +156,7 @@ void drawMat() {
 	bm.reset(new Bitmap(rect.right, rect.bottom, &g));
 	memG.reset(new Graphics(bm.get()));
 	memG->SetSmoothingMode(SmoothingMode::SmoothingModeAntiAlias);
-	memG->Clear(Color(255, 255, 255));
+	memG->Clear(Color::White);
 	Pen penWall(ColorWall, wallsize / 4.0f);
 	static const Pen penDeadEnd(ColorDeadEnd, wallsize / 4.0f);	
 
