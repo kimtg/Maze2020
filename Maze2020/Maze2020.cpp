@@ -137,7 +137,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, CW_USEDEFAULT, 600, 400, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -217,30 +217,24 @@ void generate() {
 	mat[maxy - 1][maxx] = Mat::clear; //end
 
 	do {
-a:
 		hasWork = false;
-		y = (int)(rand_double() * (maxy + 1) / 2) * 2;
-		x = (int)(rand_double() * (maxx + 1) / 2) * 2;
-		if (mat[y][x] != Mat::wall) {
-			goto a;
-		}		
-
-		dir = (int) (rand_double() * 4);
-		int newx = x + dirs[dir][0];
-		int newy = y + dirs[dir][1];
-		int newx2 = x + 2*dirs[dir][0];
-		int newy2 = y + 2*dirs[dir][1];
-		if (newx2 >= 0 && newx2 <= maxx && newy2 >= 0 && newy2 <= maxy && mat[newy2][newx2] != Mat::wall) {					
-			mat[newy][newx] = Mat::wall;
-			mat[newy2][newx2] = Mat::wall;
-			goto a;
-		}
-
 		for (y = 0; y <= maxy; y += 2) {
 			for (x = 0; x <= maxx; x += 2) {
 				if (mat[y][x] != Mat::wall) {
 					hasWork = true;
-					goto a;
+					continue;
+				}
+
+				dir = (int)(rand_double() * 4);
+				int newx = x + dirs[dir][0];
+				int newy = y + dirs[dir][1];
+				int newx2 = x + 2 * dirs[dir][0];
+				int newy2 = y + 2 * dirs[dir][1];
+				if (newx2 >= 0 && newx2 <= maxx && newy2 >= 0 && newy2 <= maxy && mat[newy2][newx2] != Mat::wall) {
+					mat[newy][newx] = Mat::wall;
+					mat[newy2][newx2] = Mat::wall;
+					hasWork = true;
+					continue;
 				}
 			}
 		}
