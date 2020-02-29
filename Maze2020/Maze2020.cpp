@@ -49,8 +49,7 @@ public:
 	GdiplusStart() {
 		GdiplusStartupInput gpsi;
 		if (GdiplusStartup(&gpToken, &gpsi, NULL) != Ok) {
-			MessageBox(NULL, TEXT("GDI+ 라이브러리를 초기화할 수 없습니다."),
-				TEXT("알림"), MB_OK);
+			MessageBox(NULL, TEXT("Unable to initialize GDI+."), TEXT("Error"), MB_OK | MB_ICONERROR);
 			PostQuitMessage(1);
 		}
 	}
@@ -358,7 +357,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (!finished && curx == maxx - 1 && cury == maxy - 1) {
 			finished = true;
-			MessageBox(hWnd, L"Congratulations!", L"", MB_OK);
+			MessageBox(hWnd, L"Congratulations!", szTitle, MB_OK | MB_ICONINFORMATION);
 		}
 		break;
 	}
