@@ -27,22 +27,7 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
-enum class Mat { clear, wall, visited, deadend };
-
-HWND hWnd;
-
-int wallsize = 10;
-vector<vector<Mat>> mat;
-int maxx, maxy, curx, cury;
-Color ColorWall(0, 0, 0);
-Color ColorCur(50, 200, 50);
-Color ColorDeadEnd(200, 0, 0);
-bool finished = false;
-RECT rect;
-Bitmap *bm;
-Graphics *memG;
-const int dirs[][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
-
+// Order is important. This should be before any GDI+ object. Otherwise, exception occurs at exit.
 class GdiplusStart {
 	ULONG_PTR gpToken;
 public:
@@ -58,6 +43,21 @@ public:
 		GdiplusShutdown(gpToken);
 	}
 } gdiplusstart;
+
+enum class Mat { clear, wall, visited, deadend };
+HWND hWnd;
+int wallsize = 10;
+vector<vector<Mat>> mat;
+int maxx, maxy, curx, cury;
+Color ColorWall(0, 0, 0);
+Color ColorCur(50, 200, 50);
+Color ColorDeadEnd(200, 0, 0);
+bool finished = false;
+RECT rect;
+const int dirs[][2] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
+
+unique_ptr<Bitmap> bm;
+unique_ptr<Graphics> memG;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -153,10 +153,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 void drawMat() {
 	int x, y, x2, y2;
 	Graphics g(hWnd);
-	if (bm != nullptr) delete bm;
-	bm = new Bitmap(rect.right, rect.bottom, &g);
-	if (memG != nullptr) delete memG;
-	memG = new Graphics(bm);
+	bm.reset(new Bitmap(rect.right, rect.bottom, &g));
+	memG.reset(new Graphics(bm.get()));
 	memG->SetSmoothingMode(SmoothingMode::SmoothingModeAntiAlias);
 	memG->Clear(Color(255, 255, 255));
 	Pen penWall(ColorWall, wallsize / 4.0f);
@@ -362,7 +360,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Add any drawing code that uses hdc here...
 			Graphics g(hdc);
-			CachedBitmap cbm(bm, &g);
+			CachedBitmap cbm(bm.get(), &g);
 			g.DrawCachedBitmap(&cbm, 0, 0);
 			
             EndPaint(hWnd, &ps);
