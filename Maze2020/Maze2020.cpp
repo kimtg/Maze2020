@@ -158,10 +158,10 @@ void drawMat() {
 	bm = new Bitmap(rect.right, rect.bottom, &g);
 	if (memG != nullptr) delete memG;
 	memG = new Graphics(bm);
+	memG->SetSmoothingMode(SmoothingMode::SmoothingModeAntiAlias);
 	memG->Clear(Color(255, 255, 255));
 	Pen penWall(ColorWall, wallsize / 4.0f);
-	static const Pen penDeadEnd(ColorDeadEnd, wallsize / 4.0f);
-	static const Pen penCur(ColorCur, wallsize / 4.0f);
+	static const Pen penDeadEnd(ColorDeadEnd, wallsize / 4.0f);	
 
 	for (y = 0; y <= maxy / 2; y++) {
 		for (x = 0; x <= maxx / 2; x++) {
@@ -182,9 +182,7 @@ void drawMat() {
 				memG->DrawEllipse(&penDeadEnd, x*wallsize - wallsize / 2, y*wallsize - wallsize / 2, wallsize, wallsize);
 			}
 		}
-	}
-
-	memG->DrawLine(&penCur, 0 * wallsize, 1 * wallsize, curx*wallsize, cury*wallsize);
+	}	
 }
 
 double rand_double() {
@@ -194,7 +192,8 @@ double rand_double() {
 void generate() {
 	int x, y, dir;
 	bool hasWork;
-	bool finished = false;	
+	bool finished = false;
+	static const Pen penCur(ColorCur, wallsize / 4.0f);
 	
 	maxy = rect.bottom / wallsize / 2 * 2;
 	maxx = rect.right / wallsize / 2 * 2;
@@ -252,8 +251,9 @@ a:
 	cury = 1;
 	drawMat();
 	mat[cury][curx] = Mat::visited;
+	memG->DrawLine(&penCur, 0 * wallsize, 1 * wallsize, curx*wallsize, cury*wallsize);
 	
-	InvalidateRect(hWnd, NULL, true);
+	InvalidateRect(hWnd, NULL, false);
 }
 
 int matBlocked(int x, int y) {
@@ -284,7 +284,7 @@ void solve() {
 		}
 	} while (hasWork);
 	drawMat();
-	InvalidateRect(hWnd, NULL, true);
+	InvalidateRect(hWnd, NULL, false);
 }
 
 //
@@ -354,7 +354,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		mat[cury][curx] = Mat::visited;
 		memG->DrawLine(&pen, oldx * wallsize, oldy * wallsize, curx * wallsize, cury * wallsize);
-		InvalidateRect(hWnd, NULL, true);
+		InvalidateRect(hWnd, NULL, false);
 
 		if (!finished && curx == maxx - 1 && cury == maxy - 1) {
 			finished = true;
