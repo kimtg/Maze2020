@@ -295,9 +295,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-	//case WM_WINDOWPOSCHANGED:
-	//case WM_GETMINMAXINFO:
-	case WM_SIZE:
+	case WM_WINDOWPOSCHANGED:
+	case WM_GETMINMAXINFO:
 		// resize
 		GetClientRect(hWnd, &rect);
 		break;
