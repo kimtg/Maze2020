@@ -25,9 +25,9 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    Options(HWND, UINT, WPARAM, LPARAM);
 
-// Order is important. This should be before any GDI+ object. Otherwise, exception occurs at exit.
+// Order is important. This should be before any GDI+ object. (Shutdown is last.) Otherwise, exception occurs at exit.
 class GdiplusStart {
 	ULONG_PTR gpToken;
 public:
@@ -158,7 +158,10 @@ void drawMat() {
 	memG->SetSmoothingMode(SmoothingMode::SmoothingModeAntiAlias);
 	memG->Clear(Color::White);
 	Pen penWall(ColorWall, wallsize / 4.0f);
-	static const Pen penDeadEnd(ColorDeadEnd, wallsize / 4.0f);	
+	static const Pen penDeadEnd(ColorDeadEnd, wallsize / 4.0f);
+	
+	penWall.SetStartCap(LineCap::LineCapTriangle);
+	penWall.SetEndCap(LineCap::LineCapTriangle);
 
 	for (y = 0; y <= maxy / 2; y++) {
 		for (x = 0; x <= maxx / 2; x++) {
@@ -292,8 +295,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-	case WM_WINDOWPOSCHANGED:
-	case WM_GETMINMAXINFO: // resize
+	//case WM_WINDOWPOSCHANGED:
+	//case WM_GETMINMAXINFO:
+	case WM_SIZE:
+		// resize
 		GetClientRect(hWnd, &rect);
 		break;
     case WM_COMMAND:
@@ -308,8 +313,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			case IDM_SOLVE:
 				solve();
 				break;
-            case IDM_ABOUT:				
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            case IDM_OPTIONS:
+                DialogBox(hInst, MAKEINTRESOURCE(IDD_OPTIONSBOX), hWnd, Options);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
@@ -375,18 +380,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+// Message handler for options box.
+INT_PTR CALLBACK Options(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
     switch (message)
     {
     case WM_INITDIALOG:
+		SetDlgItemInt(hDlg, IDC_EDITWIDTH, wallsize, true);
         return (INT_PTR)TRUE;
 
     case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		int id = LOWORD(wParam);
+        if (id == IDOK || id == IDCANCEL)
         {
+			if (id == IDOK) {
+				int ok;
+				int r = GetDlgItemInt(hDlg, IDC_EDITWIDTH, &ok, false);
+				if (ok && r > 0) wallsize = r;
+			}
             EndDialog(hDlg, LOWORD(wParam));
             return (INT_PTR)TRUE;
         }
