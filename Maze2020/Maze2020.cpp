@@ -160,8 +160,8 @@ void drawMat() {
 	Pen penWall(ColorWall, wallsize / 4.0f);
 	static const Pen penDeadEnd(ColorDeadEnd, wallsize / 4.0f);
 	
-	penWall.SetStartCap(LineCap::LineCapTriangle);
-	penWall.SetEndCap(LineCap::LineCapTriangle);
+	penWall.SetStartCap(LineCap::LineCapRound);
+	penWall.SetEndCap(LineCap::LineCapRound);
 
 	for (y = 0; y <= maxy / 2; y++) {
 		for (x = 0; x <= maxx / 2; x++) {
@@ -182,7 +182,7 @@ void drawMat() {
 				memG->DrawEllipse(&penDeadEnd, x*wallsize - wallsize / 2, y*wallsize - wallsize / 2, wallsize, wallsize);
 			}
 		}
-	}	
+	}
 }
 
 double rand_double() {
@@ -192,8 +192,10 @@ double rand_double() {
 void generate() {
 	int x, y, dir;
 	bool hasWork;
-	bool finished = false;
-	static const Pen penCur(ColorCur, wallsize / 4.0f);
+	finished = false;
+	Pen penCur(ColorCur, wallsize / 4.0f);
+	penCur.SetStartCap(LineCap::LineCapRound);
+	penCur.SetEndCap(LineCap::LineCapRound);
 	
 	maxy = rect.bottom / wallsize / 2 * 2;
 	maxx = rect.right / wallsize / 2 * 2;
@@ -327,6 +329,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		int oldx, oldy;
 		Pen pen(ColorCur, wallsize / 4.0f);
+		pen.SetStartCap(LineCap::LineCapRound);
+		pen.SetEndCap(LineCap::LineCapRound);
 		oldx = curx;
 		oldy = cury;
 		switch (wParam) {
