@@ -158,7 +158,8 @@ void drawMat() {
 	memG->SetSmoothingMode(SmoothingMode::SmoothingModeAntiAlias);
 	memG->Clear(Color::White);
 	Pen penWall(ColorWall, wallsize / 4.0f);
-	static const Pen penDeadEnd(ColorDeadEnd, wallsize / 4.0f);
+	//Pen penDeadEnd(ColorDeadEnd, wallsize / 4.0f);
+	SolidBrush brushDeadEnd(ColorDeadEnd);
 	
 	penWall.SetStartCap(LineCap::LineCapRound);
 	penWall.SetEndCap(LineCap::LineCapRound);
@@ -179,7 +180,8 @@ void drawMat() {
 	for (y = 1; y < maxy; y += 2) {
 		for (x = 1; x < maxx; x += 2) {
 			if (mat[y][x] == Mat::deadend) {
-				memG->DrawEllipse(&penDeadEnd, x*wallsize - wallsize / 2, y*wallsize - wallsize / 2, wallsize, wallsize);
+				//memG->DrawEllipse(&penDeadEnd, x*wallsize - wallsize / 2, y*wallsize - wallsize / 2, wallsize, wallsize);
+				memG->FillRectangle(&brushDeadEnd, x * wallsize - wallsize / 2, y * wallsize - wallsize / 2, wallsize, wallsize);
 			}
 		}
 	}
