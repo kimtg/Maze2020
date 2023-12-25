@@ -197,6 +197,7 @@ void generate() {
 	penCur.SetStartCap(LineCap::LineCapRound);
 	penCur.SetEndCap(LineCap::LineCapRound);
 	
+	if (wallsize > min(rect.bottom, rect.right) / 2) wallsize = min(rect.bottom, rect.right) / 2;
 	maxy = rect.bottom / wallsize / 2 * 2;
 	maxx = rect.right / wallsize / 2 * 2;
 	
